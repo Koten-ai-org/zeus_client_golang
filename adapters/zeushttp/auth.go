@@ -33,6 +33,9 @@ const (
 	defaultIdleTTL    = 1800.0
 	defaultHardTTL    = 43200.0
 	sessionIdleMargin = 30 * time.Second
+
+	// sessionForceClosedError is the body "error" code (same field as contract_409).
+	sessionForceClosedError = "session_force_closed"
 )
 
 // AuthResolver is Python ZeusAuthResolver: per-runtime Zeus header mint.
@@ -435,6 +438,32 @@ func (r *AuthResolver) storeCache(key cacheKey, ent cachedSID) {
 		r.cache = map[cacheKey]cachedSID{}
 	}
 	r.cache[key] = ent
+}
+
+// dropBasicLogin removes the cached basic login for target's scope.
+// The next ResolveAuth for that scope mints again. Other scopes stay cached.
+func (r *AuthResolver) dropBasicLogin(ctx context.Context, target config.DataTarget) {
+	if r == nil || target.Bucket == "" || target.Scope == "" {
+		return
+	}
+	user, _, _ := r.scopeUserPwd(ctx, target)
+	key := cacheKey{
+		URL:    r.endpoint.URL,
+		Bucket: target.Bucket,
+		Scope:  target.Scope,
+		User:   user,
+	}
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	delete(r.cache, key)
+}
+
+func isSessionForceClosed(body map[string]any) bool {
+	if body == nil {
+		return false
+	}
+	code, ok := body["error"].(string)
+	return ok && code == sessionForceClosedError
 }
 
 func (r *AuthResolver) httpPort() (ports.HttpPort, error) {

@@ -324,6 +324,9 @@ func (p *Port) CallVerb(ctx context.Context, req ports.VerbRequest) (ports.VerbH
 	reqID := domain.ReqIDFromHeaders(resp.Headers)
 	status := resp.Status
 	body := parseVerbBody(resp.Body)
+	if status == 429 && isSessionForceClosed(body) && p.auth != nil {
+		p.auth.dropBasicLogin(ctx, req.Target)
+	}
 	var errStr string
 	if status >= 400 {
 		errStr = fmt.Sprintf("zeus HTTP %d", status)

@@ -1090,6 +1090,32 @@ func executeToolCalls(ctx context.Context, o executeToolOpts) (ToolRoundOutcome,
 		}
 		if _, term := terminateNames[name]; term {
 			finalSummary = asString(tcArgs["summary"])
+			if name == clientTerminateReturn && strings.TrimSpace(finalSummary) != "" && o.zeus != nil {
+				_, callErr := o.zeus.CallVerb(ctx, ports.VerbRequest{
+					Verb:       name,
+					Body:       tcArgs,
+					Target:     o.target,
+					ModeHeader: orAnalytics(o.mode),
+					Headers: zeushttp.CorrelationHeaders(zeushttp.Correlation{
+						ChatID:        o.chatID,
+						TurnID:        o.turnID,
+						CallID:        callID,
+						Mode:          orAnalytics(o.mode),
+						ForceTrace:    o.forceTrace,
+						TraceClass:    zeushttp.TraceClassAgent,
+						ChatSessionID: o.chatSessionID,
+						BriefSha12:    o.briefSha12,
+						MiniSha12:     o.miniSha12,
+					}),
+					AllowPipeline: true,
+					Rewind:        o.rewind,
+				})
+				if callErr != nil {
+					if de := ctxErrAsDomain(callErr); de != nil && (de.Code == domain.CodeCancelled || de.Code == domain.CodeContextDeadline) {
+						return out, callErr
+					}
+				}
+			}
 			returnSeen = true
 			out.ReturnArgs = cloneAnyMap(tcArgs)
 			out.TerminateVia = "return"

@@ -248,6 +248,154 @@ func TestHTTPCreateSessionWireShape(t *testing.T) {
 	}
 }
 
+func TestHTTPCreate500Then201RetriesOnce(t *testing.T) {
+	const (
+		firstReq  = "50000000-0000-4000-8000-000000000500"
+		secondReq = "20100000-0000-4000-8000-000000000201"
+		secondSid = "zsess_retry_ok"
+	)
+	var n int
+	var bodies [][]byte
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost || r.URL.Path != "/v2/session" {
+			t.Errorf("request %s %s", r.Method, r.URL.Path)
+		}
+		raw, _ := io.ReadAll(r.Body)
+		bodies = append(bodies, append([]byte(nil), raw...))
+		n++
+		if n == 1 {
+			w.Header().Set(domain.ReqIDHeader, firstReq)
+			w.WriteHeader(http.StatusInternalServerError)
+			_, _ = w.Write([]byte(`{"error":"internal"}`))
+			return
+		}
+		w.Header().Set(domain.ReqIDHeader, secondReq)
+		w.WriteHeader(http.StatusCreated)
+		_, _ = w.Write([]byte(`{"session_id":"` + secondSid + `","round":1}`))
+	}))
+	defer srv.Close()
+	c := sessionClient(t, nil, srv.URL)
+	result, err := c.Create(context.Background(), SessionCreateRequest{
+		ContractID:   "c1",
+		ContractHash: "md5:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+		ChatRequest:  map[string]any{"messages": []any{}},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n != 2 {
+		t.Fatalf("posts %d", n)
+	}
+	if !result.OK || result.StatusCode != 201 {
+		t.Fatalf("%+v", result)
+	}
+	if result.ReqID != secondReq {
+		t.Fatalf("req_id %q", result.ReqID)
+	}
+	if result.Body["session_id"] != secondSid {
+		t.Fatalf("sid %v", result.Body["session_id"])
+	}
+	if result.Body["_req_id"] != secondReq {
+		t.Fatalf("body req_id %v", result.Body["_req_id"])
+	}
+	if len(bodies) != 2 || string(bodies[0]) != string(bodies[1]) {
+		t.Fatalf("bodies %q %q", bodies[0], bodies[1])
+	}
+	for _, raw := range bodies {
+		var body map[string]any
+		if err := json.Unmarshal(raw, &body); err != nil {
+			t.Fatal(err)
+		}
+		if _, ok := body["session_id"]; ok {
+			t.Fatal("client must not send session_id")
+		}
+	}
+}
+
+func TestHTTPCreateSecond500Stops(t *testing.T) {
+	const secondReq = "50000000-0000-4000-8000-000000000502"
+	var n int
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost || r.URL.Path != "/v2/session" {
+			t.Errorf("request %s %s", r.Method, r.URL.Path)
+		}
+		n++
+		if n == 1 {
+			w.Header().Set(domain.ReqIDHeader, "50000000-0000-4000-8000-000000000501")
+			w.WriteHeader(http.StatusInternalServerError)
+			_, _ = w.Write([]byte(`{"error":"first"}`))
+			return
+		}
+		w.Header().Set(domain.ReqIDHeader, secondReq)
+		w.WriteHeader(http.StatusInternalServerError)
+		_, _ = w.Write([]byte(`{"error":"second"}`))
+	}))
+	defer srv.Close()
+	c := sessionClient(t, nil, srv.URL)
+	result, err := c.Create(context.Background(), SessionCreateRequest{
+		ContractID:   "c1",
+		ContractHash: "md5:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+		ChatRequest:  map[string]any{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n != 2 {
+		t.Fatalf("posts %d", n)
+	}
+	if result.OK || result.StatusCode != 500 || result.Error != "HTTP 500" {
+		t.Fatalf("%+v", result)
+	}
+	if result.ReqID != secondReq {
+		t.Fatalf("req_id %q", result.ReqID)
+	}
+	if result.Body["error"] != "second" {
+		t.Fatalf("body %v", result.Body)
+	}
+}
+
+func TestHTTPCreate502IsOnePost(t *testing.T) {
+	const reqID = "50200000-0000-4000-8000-000000000502"
+	var n int
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost || r.URL.Path != "/v2/session" {
+			t.Errorf("request %s %s", r.Method, r.URL.Path)
+		}
+		n++
+		if n > 1 {
+			w.Header().Set(domain.ReqIDHeader, "20100000-0000-4000-8000-000000000201")
+			w.WriteHeader(http.StatusCreated)
+			_, _ = w.Write([]byte(`{"session_id":"should-not-run"}`))
+			return
+		}
+		w.Header().Set(domain.ReqIDHeader, reqID)
+		w.WriteHeader(http.StatusBadGateway)
+		_, _ = w.Write([]byte(`{"error":"bad_gateway"}`))
+	}))
+	defer srv.Close()
+	c := sessionClient(t, nil, srv.URL)
+	result, err := c.Create(context.Background(), SessionCreateRequest{
+		ContractID:   "c1",
+		ContractHash: "md5:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+		ChatRequest:  map[string]any{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n != 1 {
+		t.Fatalf("posts %d", n)
+	}
+	if result.OK || result.StatusCode != 502 {
+		t.Fatalf("%+v", result)
+	}
+	if result.ReqID != reqID {
+		t.Fatalf("req_id %q", result.ReqID)
+	}
+	if result.Body["error"] != "bad_gateway" {
+		t.Fatalf("body %v", result.Body)
+	}
+}
+
 func TestHTTPContinueTurnWireShape(t *testing.T) {
 	doc := loadWire(t, filepath.Join("testdata", "wire", "v2_session_turn.response.json"))
 	sid := "zsess_mock_turn_001"
@@ -300,7 +448,12 @@ func jsonIntTest(v any) int {
 
 func TestHTTPCreate409CapturesReqIDDoesNotForgeHash(t *testing.T) {
 	doc := loadWire(t, filepath.Join("testdata", "wire", "errors", "contract_409.response.json"))
+	var posts int
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost || r.URL.Path != "/v2/session" {
+			t.Errorf("request %s %s", r.Method, r.URL.Path)
+		}
+		posts++
 		for k, v := range doc.Headers {
 			w.Header().Set(k, v)
 		}
@@ -316,6 +469,9 @@ func TestHTTPCreate409CapturesReqIDDoesNotForgeHash(t *testing.T) {
 	})
 	if err != nil {
 		t.Fatal(err)
+	}
+	if posts != 1 {
+		t.Fatalf("posts %d", posts)
 	}
 	if result.OK || result.StatusCode != 409 {
 		t.Fatalf("%+v", result)

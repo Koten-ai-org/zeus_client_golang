@@ -458,6 +458,15 @@ func (r *AuthResolver) dropBasicLogin(ctx context.Context, target config.DataTar
 	delete(r.cache, key)
 }
 
+// dropIfSessionForceClosed drops this resolver's basic login when the hop
+// that used it was revoked. Call it on the resolver that minted the header.
+func (r *AuthResolver) dropIfSessionForceClosed(ctx context.Context, status int, body map[string]any, target config.DataTarget) {
+	if r == nil || status != 429 || !isSessionForceClosed(body) {
+		return
+	}
+	r.dropBasicLogin(ctx, target)
+}
+
 func isSessionForceClosed(body map[string]any) bool {
 	if body == nil {
 		return false

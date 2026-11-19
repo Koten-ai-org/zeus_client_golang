@@ -71,6 +71,58 @@ func TestSessionPost429SessionForceClosedDropsBasicLogin(t *testing.T) {
 	}
 }
 
+func TestRehydrate429SessionForceClosedDropsBasicLogin(t *testing.T) {
+	h := newBasicHopServer(t, http.StatusTooManyRequests, `{"error":"session_force_closed","message":"session closed"}`)
+	c := NewSessionClient(SessionClientOptions{
+		Endpoint: basicEndpoint(h.srv.URL),
+		Secrets:  basicSecrets(),
+		Version:  "0.1.0-dev",
+	})
+	t.Cleanup(func() { _ = c.Close(context.Background()) })
+	body, err := c.Rehydrate(context.Background(), "sid-prior", 6, "analytics", nil, beerTarget())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if body != nil {
+		t.Fatalf("body %v", body)
+	}
+	if h.authN.Load() != 1 || h.hopN.Load() != 1 {
+		t.Fatalf("mints %d hops %d paths %v", h.authN.Load(), h.hopN.Load(), h.hopPaths())
+	}
+	if _, err := c.auth.ResolveAuth(context.Background(), beerTarget(), false); err != nil {
+		t.Fatal(err)
+	}
+	if h.authN.Load() != 2 {
+		t.Fatalf("next ResolveAuth mints %d", h.authN.Load())
+	}
+}
+
+func TestRehydrate429OtherErrorKeepsBasicLogin(t *testing.T) {
+	h := newBasicHopServer(t, http.StatusTooManyRequests, `{"error":"contract_required","message":"not force closed"}`)
+	c := NewSessionClient(SessionClientOptions{
+		Endpoint: basicEndpoint(h.srv.URL),
+		Secrets:  basicSecrets(),
+		Version:  "0.1.0-dev",
+	})
+	t.Cleanup(func() { _ = c.Close(context.Background()) })
+	if _, err := c.Rehydrate(context.Background(), "sid-prior", 6, "analytics", nil, beerTarget()); err != nil {
+		t.Fatal(err)
+	}
+	if h.authN.Load() != 1 {
+		t.Fatalf("mints %d", h.authN.Load())
+	}
+	auth, err := c.auth.ResolveAuth(context.Background(), beerTarget(), false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if h.authN.Load() != 1 {
+		t.Fatalf("cache miss, mints %d", h.authN.Load())
+	}
+	if auth.Headers[headerZeusSession] != h.sid(0) {
+		t.Fatalf("session %q want %q", auth.Headers[headerZeusSession], h.sid(0))
+	}
+}
+
 func TestSessionPost429OtherErrorKeepsBasicLogin(t *testing.T) {
 	h := newBasicHopServer(t, http.StatusTooManyRequests, `{"error":"contract_required","message":"not force closed"}`)
 	c := NewSessionClient(SessionClientOptions{

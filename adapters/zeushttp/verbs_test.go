@@ -177,6 +177,44 @@ func TestCallVerb429SessionForceClosedDropsBasicLogin(t *testing.T) {
 	}
 }
 
+func TestCallVerb429OverrideDoesNotDropPortLogin(t *testing.T) {
+	keep := newBasicHopServer(t, http.StatusOK, `{"ok":true}`)
+	other := newBasicHopServer(t, http.StatusTooManyRequests, `{"error":"session_force_closed","message":"session closed"}`)
+	p := NewPort(PortOptions{
+		Endpoint: basicEndpoint(keep.srv.URL),
+		Secrets:  basicSecrets(),
+		Version:  "0.1.0-dev",
+	})
+	t.Cleanup(func() { _ = p.Close(context.Background()) })
+	if _, err := p.ResolveAuth(context.Background(), beerTargetFull(), false); err != nil {
+		t.Fatal(err)
+	}
+	if keep.authN.Load() != 1 {
+		t.Fatalf("prime mints %d", keep.authN.Load())
+	}
+	hop, err := p.CallVerb(context.Background(), ports.VerbRequest{
+		Verb:    "find",
+		Target:  beerTargetFull(),
+		Body:    map[string]any{"entity_type": "Beer"},
+		BaseURL: other.srv.URL,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if hop.OK || hop.StatusCode != 429 {
+		t.Fatalf("%+v", hop)
+	}
+	if other.authN.Load() != 1 || other.hopN.Load() != 1 {
+		t.Fatalf("override mints %d hops %d", other.authN.Load(), other.hopN.Load())
+	}
+	if _, err := p.ResolveAuth(context.Background(), beerTargetFull(), false); err != nil {
+		t.Fatal(err)
+	}
+	if keep.authN.Load() != 1 {
+		t.Fatalf("port login dropped, mints %d", keep.authN.Load())
+	}
+}
+
 func TestCallVerb429OtherErrorKeepsBasicLogin(t *testing.T) {
 	h := newBasicHopServer(t, http.StatusTooManyRequests, `{"error":"contract_required","message":"not force closed"}`)
 	p := NewPort(PortOptions{

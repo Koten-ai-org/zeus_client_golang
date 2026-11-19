@@ -230,6 +230,7 @@ func (c *SessionClient) Rehydrate(ctx context.Context, sessionID string, rounds 
 	reqID := domain.ReqIDFromHeaders(resp.Headers)
 	c.setLastReqID(reqID)
 	if resp.Status != 200 {
+		c.auth.dropIfSessionForceClosed(ctx, resp.Status, parseVerbBody(resp.Body), target)
 		c.emit("error", "zeus_client.session.failed", map[string]any{
 			"session.id":       sid,
 			"req_id":           reqID,
@@ -410,9 +411,7 @@ func (c *SessionClient) post(ctx context.Context, postURL string, headers map[st
 	reqID := domain.ReqIDFromHeaders(resp.Headers)
 	c.setLastReqID(reqID)
 	body := parseVerbBody(resp.Body)
-	if resp.Status == 429 && isSessionForceClosed(body) && c.auth != nil {
-		c.auth.dropBasicLogin(ctx, target)
-	}
+	c.auth.dropIfSessionForceClosed(ctx, resp.Status, body, target)
 	if _, ok := okCodes[resp.Status]; ok {
 		if reqID != "" {
 			body["_req_id"] = reqID

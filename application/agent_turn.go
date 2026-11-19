@@ -1088,40 +1088,50 @@ func executeToolCalls(ctx context.Context, o executeToolOpts) (ToolRoundOutcome,
 		if s, ok := tcArgs["summary"].(string); ok && strings.TrimSpace(s) != "" {
 			out.ToolArgSummary = strings.TrimSpace(s)
 		}
+		postReturn := false
 		if _, term := terminateNames[name]; term {
 			finalSummary = asString(tcArgs["summary"])
-			returnSeen = true
-			out.ReturnArgs = cloneAnyMap(tcArgs)
-			out.TerminateVia = "return"
-			*o.messages = append(*o.messages, map[string]any{
-				"role":         "tool",
-				"tool_call_id": callID,
-				"name":         name,
-				"content":      mustJSON(tcArgs),
-			})
-			out.Steps = append(out.Steps, map[string]any{"round": o.roundN, "type": name, "args": tcArgs})
-			continue
+			postReturn = name == clientTerminateReturn && strings.TrimSpace(finalSummary) != "" && o.zeus != nil
+			if !postReturn {
+				returnSeen = true
+				out.ReturnArgs = cloneAnyMap(tcArgs)
+				out.TerminateVia = "return"
+				*o.messages = append(*o.messages, map[string]any{
+					"role":         "tool",
+					"tool_call_id": callID,
+					"name":         name,
+					"content":      mustJSON(tcArgs),
+				})
+				out.Steps = append(out.Steps, map[string]any{"round": o.roundN, "type": name, "args": tcArgs})
+				continue
+			}
 		}
-		tcArgs = o.middleware.BeforeZeus(o.mwCtx, name, tcArgs)
-		if s, ok := tcArgs["summary"].(string); ok && strings.TrimSpace(s) != "" {
-			out.ToolArgSummary = strings.TrimSpace(s)
+		if !postReturn {
+			tcArgs = o.middleware.BeforeZeus(o.mwCtx, name, tcArgs)
+			if s, ok := tcArgs["summary"].(string); ok && strings.TrimSpace(s) != "" {
+				out.ToolArgSummary = strings.TrimSpace(s)
+			}
+			denied, _ := o.mwCtx.Data["denied_verbs"].([]string)
+			if containsStr(denied, name) {
+				*o.messages = append(*o.messages, map[string]any{
+					"role": "tool", "tool_call_id": callID, "name": name,
+					"content": mustJSON(map[string]any{"error": "verb_denied", "verb": name}),
+				})
+				out.Steps = append(out.Steps, map[string]any{"round": o.roundN, "type": "denied", "name": name, "args": tcArgs})
+				continue
+			}
+			if o.mwCtx.boolData("hooks_must_refuse") {
+				*o.messages = append(*o.messages, map[string]any{
+					"role": "tool", "tool_call_id": callID, "name": name,
+					"content": mustJSON(map[string]any{"error": "turn_refused", "verb": name}),
+				})
+				out.Steps = append(out.Steps, map[string]any{"round": o.roundN, "type": "refused", "name": name, "args": tcArgs})
+				continue
+			}
 		}
-		denied, _ := o.mwCtx.Data["denied_verbs"].([]string)
-		if containsStr(denied, name) {
-			*o.messages = append(*o.messages, map[string]any{
-				"role": "tool", "tool_call_id": callID, "name": name,
-				"content": mustJSON(map[string]any{"error": "verb_denied", "verb": name}),
-			})
-			out.Steps = append(out.Steps, map[string]any{"round": o.roundN, "type": "denied", "name": name, "args": tcArgs})
-			continue
-		}
-		if o.mwCtx.boolData("hooks_must_refuse") {
-			*o.messages = append(*o.messages, map[string]any{
-				"role": "tool", "tool_call_id": callID, "name": name,
-				"content": mustJSON(map[string]any{"error": "turn_refused", "verb": name}),
-			})
-			out.Steps = append(out.Steps, map[string]any{"round": o.roundN, "type": "refused", "name": name, "args": tcArgs})
-			continue
+		var returnArgs map[string]any
+		if postReturn {
+			returnArgs = cloneAnyMap(tcArgs)
 		}
 		t0 := time.Now()
 		hop, err := o.zeus.CallVerb(ctx, ports.VerbRequest{
@@ -1230,6 +1240,11 @@ func executeToolCalls(ctx context.Context, o executeToolOpts) (ToolRoundOutcome,
 			if _, orient := orientationVerbs[name]; !orient {
 				out.ToolsWithPayload++
 			}
+		}
+		if postReturn {
+			returnSeen = true
+			out.ReturnArgs = returnArgs
+			out.TerminateVia = "return"
 		}
 		if name == "pipeline" && hasTurnComplete(body) {
 			returnSeen = true

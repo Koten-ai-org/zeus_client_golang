@@ -128,8 +128,124 @@ func TestVerbURLShapes(t *testing.T) {
 	if got := VerbURL("http://z:8080", tgt, "explain"); !strings.HasSuffix(got, "/v2/explain") {
 		t.Fatalf("explain %s", got)
 	}
+	if got := VerbURL("http://z:8080", tgt, "return"); !strings.HasSuffix(got, "/v2/return") {
+		t.Fatalf("return %s", got)
+	}
 	if got := VerbURL("http://z:8080", tgt, "describe"); !strings.HasSuffix(got, "/v2/yelp-data/_default/describe") {
 		t.Fatalf("describe %s", got)
+	}
+}
+
+func TestCallVerb429SessionForceClosedDropsBasicLogin(t *testing.T) {
+	h := newBasicHopServer(t, http.StatusTooManyRequests, `{"error":"session_force_closed","message":"session closed"}`)
+	p := NewPort(PortOptions{
+		Endpoint: basicEndpoint(h.srv.URL),
+		Secrets:  basicSecrets(),
+		Version:  "0.1.0-dev",
+	})
+	t.Cleanup(func() { _ = p.Close(context.Background()) })
+	hop, err := p.CallVerb(context.Background(), ports.VerbRequest{
+		Verb:   "find",
+		Target: beerTargetFull(),
+		Body:   map[string]any{"entity_type": "Beer"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if hop.OK || hop.StatusCode != 429 {
+		t.Fatalf("%+v", hop)
+	}
+	if h.hopN.Load() != 1 {
+		t.Fatalf("hop calls %d paths %v", h.hopN.Load(), h.hopPaths())
+	}
+	paths := h.hopPaths()
+	if len(paths) != 1 || !strings.HasSuffix(paths[0], "/v2/beer-sample/_default/_default/find") {
+		t.Fatalf("paths %v", paths)
+	}
+	if h.authN.Load() != 1 {
+		t.Fatalf("mints %d", h.authN.Load())
+	}
+	auth, err := p.ResolveAuth(context.Background(), beerTargetFull(), false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if h.authN.Load() != 2 {
+		t.Fatalf("next ResolveAuth mints %d", h.authN.Load())
+	}
+	if auth.Headers[headerZeusSession] == "" || auth.Headers[headerZeusSession] == h.sid(0) {
+		t.Fatalf("session %q reused %q", auth.Headers[headerZeusSession], h.sid(0))
+	}
+}
+
+func TestCallVerb429OverrideDoesNotDropPortLogin(t *testing.T) {
+	keep := newBasicHopServer(t, http.StatusOK, `{"ok":true}`)
+	other := newBasicHopServer(t, http.StatusTooManyRequests, `{"error":"session_force_closed","message":"session closed"}`)
+	p := NewPort(PortOptions{
+		Endpoint: basicEndpoint(keep.srv.URL),
+		Secrets:  basicSecrets(),
+		Version:  "0.1.0-dev",
+	})
+	t.Cleanup(func() { _ = p.Close(context.Background()) })
+	if _, err := p.ResolveAuth(context.Background(), beerTargetFull(), false); err != nil {
+		t.Fatal(err)
+	}
+	if keep.authN.Load() != 1 {
+		t.Fatalf("prime mints %d", keep.authN.Load())
+	}
+	hop, err := p.CallVerb(context.Background(), ports.VerbRequest{
+		Verb:    "find",
+		Target:  beerTargetFull(),
+		Body:    map[string]any{"entity_type": "Beer"},
+		BaseURL: other.srv.URL,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if hop.OK || hop.StatusCode != 429 {
+		t.Fatalf("%+v", hop)
+	}
+	if other.authN.Load() != 1 || other.hopN.Load() != 1 {
+		t.Fatalf("override mints %d hops %d", other.authN.Load(), other.hopN.Load())
+	}
+	if _, err := p.ResolveAuth(context.Background(), beerTargetFull(), false); err != nil {
+		t.Fatal(err)
+	}
+	if keep.authN.Load() != 1 {
+		t.Fatalf("port login dropped, mints %d", keep.authN.Load())
+	}
+}
+
+func TestCallVerb429OtherErrorKeepsBasicLogin(t *testing.T) {
+	h := newBasicHopServer(t, http.StatusTooManyRequests, `{"error":"contract_required","message":"not force closed"}`)
+	p := NewPort(PortOptions{
+		Endpoint: basicEndpoint(h.srv.URL),
+		Secrets:  basicSecrets(),
+		Version:  "0.1.0-dev",
+	})
+	t.Cleanup(func() { _ = p.Close(context.Background()) })
+	hop, err := p.CallVerb(context.Background(), ports.VerbRequest{
+		Verb:   "find",
+		Target: beerTargetFull(),
+		Body:   map[string]any{"entity_type": "Beer"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if hop.OK || hop.StatusCode != 429 {
+		t.Fatalf("%+v", hop)
+	}
+	if h.hopN.Load() != 1 || h.authN.Load() != 1 {
+		t.Fatalf("hops %d mints %d", h.hopN.Load(), h.authN.Load())
+	}
+	auth, err := p.ResolveAuth(context.Background(), beerTargetFull(), false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if h.authN.Load() != 1 {
+		t.Fatalf("cache miss, mints %d", h.authN.Load())
+	}
+	if auth.Headers[headerZeusSession] != h.sid(0) {
+		t.Fatalf("session %q want %q", auth.Headers[headerZeusSession], h.sid(0))
 	}
 }
 

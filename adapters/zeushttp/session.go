@@ -160,6 +160,9 @@ func (c *SessionClient) Close(ctx context.Context) error {
 }
 
 // Create POSTs /v2/session. Does not mint session_id.
+// One HTTP 500 is posted again with the same body so the server can mint a
+// new id. 409, 429, and any other 5xx stay one POST. post itself stays one
+// shot, so turn and trace do not retry.
 func (c *SessionClient) Create(ctx context.Context, req SessionCreateRequest) (SessionHTTPResult, error) {
 	if err := c.guard(ctx); err != nil {
 		return SessionHTTPResult{}, err
@@ -185,7 +188,13 @@ func (c *SessionClient) Create(ctx context.Context, req SessionCreateRequest) (S
 	if err != nil {
 		return SessionHTTPResult{}, err
 	}
-	return c.post(ctx, postURL, headers, payload, map[int]struct{}{200: {}, 201: {}}, RewindQueryParams(req.Rewind))
+	okCodes := map[int]struct{}{200: {}, 201: {}}
+	query := RewindQueryParams(req.Rewind)
+	result, err := c.post(ctx, postURL, headers, payload, okCodes, query)
+	if err != nil || result.StatusCode != 500 {
+		return result, err
+	}
+	return c.post(ctx, postURL, headers, payload, okCodes, query)
 }
 
 // Rehydrate GETs /v2/session/{id}. Non-200 or transport error → (nil, nil) so

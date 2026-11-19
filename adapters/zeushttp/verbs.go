@@ -240,7 +240,7 @@ func (p *Port) CallVerb(ctx context.Context, req ports.VerbRequest) (ports.VerbH
 	}
 
 	hopEndpoint := p.endpointFor(req)
-	auth, err := p.authFor(ctx, req, req.Target, false)
+	resolver, auth, err := p.authFor(ctx, req, req.Target, false)
 	if err != nil {
 		return ports.VerbHopResult{}, err
 	}
@@ -276,7 +276,7 @@ func (p *Port) CallVerb(ctx context.Context, req ports.VerbRequest) (ports.VerbH
 		TimeoutS: hopEndpoint.TimeoutS,
 	})
 	if err == nil && resp.Status == 401 && strings.ToLower(strings.TrimSpace(string(hopEndpoint.AuthMode))) == "basic" {
-		auth, err = p.authFor(ctx, req, req.Target, true)
+		resolver, auth, err = p.authFor(ctx, req, req.Target, true)
 		if err != nil {
 			return ports.VerbHopResult{}, err
 		}
@@ -324,6 +324,9 @@ func (p *Port) CallVerb(ctx context.Context, req ports.VerbRequest) (ports.VerbH
 	reqID := domain.ReqIDFromHeaders(resp.Headers)
 	status := resp.Status
 	body := parseVerbBody(resp.Body)
+	if resolver != nil {
+		resolver.dropIfSessionForceClosed(ctx, status, body, req.Target)
+	}
 	var errStr string
 	if status >= 400 {
 		errStr = fmt.Sprintf("zeus HTTP %d", status)
@@ -451,21 +454,26 @@ func (p *Port) endpointFor(req ports.VerbRequest) config.ZeusEndpointConfig {
 	return ep
 }
 
-func (p *Port) authFor(ctx context.Context, req ports.VerbRequest, target config.DataTarget, force bool) (ports.AuthContext, error) {
+// authFor returns the resolver that minted the headers. A request whose
+// endpoint matches the port uses p.auth. An override gets its own resolver
+// so a later cache drop cannot clear the port's login.
+func (p *Port) authFor(ctx context.Context, req ports.VerbRequest, target config.DataTarget, force bool) (*AuthResolver, ports.AuthContext, error) {
 	ep := p.endpointFor(req)
 	if ep.URL == p.endpoint.URL &&
 		ep.AuthMode == p.endpoint.AuthMode &&
 		ep.Username == p.endpoint.Username &&
 		ep.PasswordEnv == p.endpoint.PasswordEnv &&
 		ep.TokenEnv == p.endpoint.TokenEnv {
-		return p.auth.ResolveAuth(ctx, target, force)
+		auth, err := p.auth.ResolveAuth(ctx, target, force)
+		return p.auth, auth, err
 	}
 	resolver := NewAuthResolver(AuthResolverOptions{
 		Endpoint: ep,
 		Secrets:  p.secrets,
 		HTTP:     p.http,
 	})
-	return resolver.ResolveAuth(ctx, target, force)
+	auth, err := resolver.ResolveAuth(ctx, target, force)
+	return resolver, auth, err
 }
 
 func (p *Port) httpPort() (ports.HttpPort, error) {

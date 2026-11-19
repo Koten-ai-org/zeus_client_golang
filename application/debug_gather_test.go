@@ -165,7 +165,7 @@ func TestFinishStampsReqIDsFromFindHop(t *testing.T) {
 		DebugPolicy: config.DebugPolicy{DetectiveBriefing: true},
 		Env:         map[string]string{"ZEUS_CLIENT_DETECTIVE": "1"},
 	})
-	if len(result.Debug.ReqIDs) != 1 || result.Debug.ReqIDs[0] != "req-find-airports" {
+	if len(result.Debug.ReqIDs) != 2 || result.Debug.ReqIDs[0] != "req-find-airports" || result.Debug.ReqIDs[1] != "req-return" {
 		t.Fatalf("req_ids %v", result.Debug.ReqIDs)
 	}
 	if result.Debug.PreferredReqID != "req-find-airports" {

@@ -56,6 +56,7 @@ func (b *blockingLLM) Complete(ctx context.Context, _ ports.LlmRequest) (ports.L
 
 type scriptedZeus struct {
 	results map[string]ports.VerbHopResult
+	errs    map[string]error
 	calls   []ports.VerbRequest
 }
 
@@ -65,6 +66,11 @@ func (z *scriptedZeus) ResolveAuth(context.Context, config.DataTarget, bool) (po
 
 func (z *scriptedZeus) CallVerb(_ context.Context, req ports.VerbRequest) (ports.VerbHopResult, error) {
 	z.calls = append(z.calls, req)
+	if z.errs != nil {
+		if err, ok := z.errs[req.Verb]; ok {
+			return ports.VerbHopResult{}, err
+		}
+	}
 	if z.results != nil {
 		if r, ok := z.results[req.Verb]; ok {
 			return r, nil
@@ -229,8 +235,11 @@ func TestSingleToolThenReturnInsight(t *testing.T) {
 	if result.Debug.AIProcessResultExit != "insight" {
 		t.Fatalf("exit %q", result.Debug.AIProcessResultExit)
 	}
-	if len(zeus.calls) != 1 || zeus.calls[0].Verb != "find" {
+	if len(zeus.calls) != 2 || zeus.calls[0].Verb != "find" || zeus.calls[1].Verb != "return" {
 		t.Fatalf("zeus calls %+v", zeus.calls)
+	}
+	if asString(zeus.calls[1].Body["summary"]) != "Found two beers in Tampa." {
+		t.Fatalf("return summary %v", zeus.calls[1].Body["summary"])
 	}
 	if !zeus.calls[0].AllowPipeline {
 		t.Fatal("agent path must allow pipeline")
@@ -244,8 +253,11 @@ func TestSingleToolThenReturnInsight(t *testing.T) {
 	if strings.Contains(result.Answer, "wish_i_knew") {
 		t.Fatal("g2")
 	}
-	if len(result.Debug.Hops) == 0 || asString(result.Debug.Hops[0]["req_id"]) != "req-find-1" {
+	if len(result.Debug.Hops) != 2 || asString(result.Debug.Hops[0]["req_id"]) != "req-find-1" {
 		t.Fatalf("hops %+v", result.Debug.Hops)
+	}
+	if asString(result.Debug.Hops[1]["name"]) != "return" || asString(result.Debug.Hops[1]["req_id"]) != "req-return" {
+		t.Fatalf("return hop %+v", result.Debug.Hops[1])
 	}
 	started := false
 	finished := false

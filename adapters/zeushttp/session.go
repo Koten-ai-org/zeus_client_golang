@@ -190,11 +190,11 @@ func (c *SessionClient) Create(ctx context.Context, req SessionCreateRequest) (S
 	}
 	okCodes := map[int]struct{}{200: {}, 201: {}}
 	query := RewindQueryParams(req.Rewind)
-	result, err := c.post(ctx, postURL, headers, payload, okCodes, query)
+	result, err := c.post(ctx, postURL, headers, payload, okCodes, query, req.Target)
 	if err != nil || result.StatusCode != 500 {
 		return result, err
 	}
-	return c.post(ctx, postURL, headers, payload, okCodes, query)
+	return c.post(ctx, postURL, headers, payload, okCodes, query, req.Target)
 }
 
 // Rehydrate GETs /v2/session/{id}. Non-200 or transport error → (nil, nil) so
@@ -239,6 +239,7 @@ func (c *SessionClient) Rehydrate(ctx context.Context, sessionID string, rounds 
 	reqID := domain.ReqIDFromHeaders(resp.Headers)
 	c.setLastReqID(reqID)
 	if resp.Status != 200 {
+		c.auth.dropIfSessionForceClosed(ctx, resp.Status, parseVerbBody(resp.Body), target)
 		c.emit("error", "zeus_client.session.failed", map[string]any{
 			"session.id":       sid,
 			"req_id":           reqID,
@@ -282,7 +283,7 @@ func (c *SessionClient) ContinueTurn(ctx context.Context, req SessionContinueReq
 	if err != nil {
 		return SessionHTTPResult{}, err
 	}
-	return c.post(ctx, postURL, headers, payload, map[int]struct{}{200: {}}, RewindQueryParams(req.Rewind))
+	return c.post(ctx, postURL, headers, payload, map[int]struct{}{200: {}}, RewindQueryParams(req.Rewind), req.Target)
 }
 
 // PostTrace POSTs /v2/session/trace (Python post_trace).
@@ -337,7 +338,7 @@ func (c *SessionClient) PostTrace(ctx context.Context, req SessionTraceRequest) 
 	if err != nil {
 		return SessionHTTPResult{}, err
 	}
-	result, err := c.post(ctx, postURL, headers, payload, map[int]struct{}{200: {}, 201: {}}, RewindQueryParams(req.Rewind))
+	result, err := c.post(ctx, postURL, headers, payload, map[int]struct{}{200: {}, 201: {}}, RewindQueryParams(req.Rewind), req.Target)
 	level := "info"
 	res := "ok"
 	if err != nil || !result.OK {
@@ -396,7 +397,7 @@ type SessionTraceRequest struct {
 	TurnID       string
 }
 
-func (c *SessionClient) post(ctx context.Context, postURL string, headers map[string]string, payload map[string]any, okCodes map[int]struct{}, query map[string]string) (SessionHTTPResult, error) {
+func (c *SessionClient) post(ctx context.Context, postURL string, headers map[string]string, payload map[string]any, okCodes map[int]struct{}, query map[string]string, target config.DataTarget) (SessionHTTPResult, error) {
 	httpPort, err := c.httpPort()
 	if err != nil {
 		return SessionHTTPResult{}, err
@@ -419,6 +420,7 @@ func (c *SessionClient) post(ctx context.Context, postURL string, headers map[st
 	reqID := domain.ReqIDFromHeaders(resp.Headers)
 	c.setLastReqID(reqID)
 	body := parseVerbBody(resp.Body)
+	c.auth.dropIfSessionForceClosed(ctx, resp.Status, body, target)
 	if _, ok := okCodes[resp.Status]; ok {
 		if reqID != "" {
 			body["_req_id"] = reqID

@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -116,6 +117,60 @@ func mintServer(t *testing.T, opts mintOpts) *httptest.Server {
 			_, _ = w.Write([]byte(`{"session_id":"` + opts.sid + `","expires_in":1800,"hard_ttl_s":43200}`))
 		}
 	}))
+}
+
+// basicHopServer mints POST /v1/.../auth/session and answers every other
+// path with status/body. Counts separate the login hop from the verb hop.
+type basicHopServer struct {
+	srv   *httptest.Server
+	authN atomic.Int32
+	hopN  atomic.Int32
+	mu    sync.Mutex
+	sids  []string
+	hops  []string
+}
+
+func newBasicHopServer(t *testing.T, status int, body string) *basicHopServer {
+	t.Helper()
+	h := &basicHopServer{}
+	h.srv = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		if strings.HasSuffix(r.URL.Path, "/auth/session") {
+			n := h.authN.Add(1)
+			sid := "sid-" + strconv.Itoa(int(n))
+			h.mu.Lock()
+			h.sids = append(h.sids, sid)
+			h.mu.Unlock()
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"session_id":"` + sid + `","expires_in":1800,"hard_ttl_s":43200}`))
+			return
+		}
+		h.hopN.Add(1)
+		h.mu.Lock()
+		h.hops = append(h.hops, r.URL.Path)
+		h.mu.Unlock()
+		w.WriteHeader(status)
+		_, _ = w.Write([]byte(body))
+	}))
+	t.Cleanup(h.srv.Close)
+	return h
+}
+
+func (h *basicHopServer) sid(i int) string {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	if i < 0 || i >= len(h.sids) {
+		return ""
+	}
+	return h.sids[i]
+}
+
+func (h *basicHopServer) hopPaths() []string {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	out := make([]string, len(h.hops))
+	copy(out, h.hops)
+	return out
 }
 
 func TestNoneEmptyHeaders(t *testing.T) {

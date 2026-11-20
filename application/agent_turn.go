@@ -1127,11 +1127,9 @@ func executeToolCalls(ctx context.Context, o executeToolOpts) (ToolRoundOutcome,
 		}
 		if name == "pipeline" {
 			rewritten, steps := domain.RewriteFTSIdsToDocKeys(tcArgs)
-			if len(steps) > 0 {
-				tcArgs = rewritten
-				if o.logf != nil {
-					o.logf("info", "zeus_client.pipeline.fts_doc_keys", map[string]any{"steps": steps})
-				}
+			tcArgs = rewritten
+			if len(steps) > 0 && o.logf != nil {
+				o.logf("info", "zeus_client.pipeline.fts_doc_keys", map[string]any{"steps": steps})
 			}
 		}
 		t0 := time.Now()

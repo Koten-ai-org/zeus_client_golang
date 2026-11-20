@@ -248,8 +248,8 @@ func (p *Port) CallVerb(ctx context.Context, req ports.VerbRequest) (ports.VerbH
 	payload := VerbBodyWithoutRewind(req.Body)
 	if verb == "pipeline" {
 		rewritten, steps := domain.RewriteFTSIdsToDocKeys(payload)
+		payload = rewritten
 		if len(steps) > 0 {
-			payload = rewritten
 			p.emit("info", "zeus_client.pipeline.fts_doc_keys", map[string]any{"steps": steps})
 		}
 	}

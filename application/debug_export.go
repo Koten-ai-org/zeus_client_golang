@@ -5,8 +5,8 @@ package application
 import (
 	"strings"
 
-	"github.com/koten-ai/zeus_client_golang/domain/journal"
-	"github.com/koten-ai/zeus_client_golang/security"
+	"github.com/Koten-ai-org/zeus_client_golang/domain/journal"
+	"github.com/Koten-ai-org/zeus_client_golang/security"
 )
 
 // SpanNode is one span.started/ended node (Python SpanNode).

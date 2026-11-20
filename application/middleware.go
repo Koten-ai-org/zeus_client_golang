@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/koten-ai/zeus_client_golang/security"
+	"github.com/Koten-ai-org/zeus_client_golang/security"
 )
 
 const (

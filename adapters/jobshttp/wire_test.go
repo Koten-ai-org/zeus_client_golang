@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/koten-ai/zeus_client_golang/ports"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
 )
 
 func TestEventToWireFieldNames(t *testing.T) {

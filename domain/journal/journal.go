@@ -5,7 +5,7 @@ package journal
 import (
 	"sync"
 
-	"github.com/koten-ai/zeus_client_golang/security"
+	"github.com/Koten-ai-org/zeus_client_golang/security"
 )
 
 // ExecutionJournal is the append-only SoT (Python ExecutionJournal).

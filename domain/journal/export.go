@@ -2,7 +2,7 @@
 
 package journal
 
-import "github.com/koten-ai/zeus_client_golang/security"
+import "github.com/Koten-ai-org/zeus_client_golang/security"
 
 // JournalSchemaVersion is export envelope version (Python JOURNAL_SCHEMA_VERSION).
 const JournalSchemaVersion = 1

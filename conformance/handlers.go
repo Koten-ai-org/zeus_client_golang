@@ -9,10 +9,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/koten-ai/zeus_client_golang/application"
-	"github.com/koten-ai/zeus_client_golang/config"
-	"github.com/koten-ai/zeus_client_golang/domain"
-	"github.com/koten-ai/zeus_client_golang/ports"
+	"github.com/Koten-ai-org/zeus_client_golang/application"
+	"github.com/Koten-ai-org/zeus_client_golang/config"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
 )
 
 // Handler drives one case against domain / application APIs.

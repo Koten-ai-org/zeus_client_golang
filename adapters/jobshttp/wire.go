@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/koten-ai/zeus_client_golang/domain"
-	"github.com/koten-ai/zeus_client_golang/ports"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
 )
 
 // EventSchemaVersion matches koten_multi_agent_golang multiagent.EventSchemaVersion.

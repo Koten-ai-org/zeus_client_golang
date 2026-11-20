@@ -5,13 +5,13 @@ package zeusclient
 import (
 	"strings"
 
-	"github.com/koten-ai/zeus_client_golang/api"
-	"github.com/koten-ai/zeus_client_golang/config"
-	"github.com/koten-ai/zeus_client_golang/domain"
-	"github.com/koten-ai/zeus_client_golang/domain/journal"
-	"github.com/koten-ai/zeus_client_golang/observability"
-	"github.com/koten-ai/zeus_client_golang/ports"
-	"github.com/koten-ai/zeus_client_golang/security"
+	"github.com/Koten-ai-org/zeus_client_golang/api"
+	"github.com/Koten-ai-org/zeus_client_golang/config"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/domain/journal"
+	"github.com/Koten-ai-org/zeus_client_golang/observability"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
+	"github.com/Koten-ai-org/zeus_client_golang/security"
 )
 
 // Options constructs a Client. Env nil uses the process environment; an empty

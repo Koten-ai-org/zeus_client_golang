@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/koten-ai/zeus_client_golang/config"
-	"github.com/koten-ai/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/config"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
 )
 
 const injectComponent = "application.control_plane_inject"

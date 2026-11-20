@@ -8,14 +8,14 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/koten-ai/zeus_client_golang/adapters/jobsfake"
-	"github.com/koten-ai/zeus_client_golang/adapters/jobshttp"
-	"github.com/koten-ai/zeus_client_golang/api"
-	"github.com/koten-ai/zeus_client_golang/application"
-	"github.com/koten-ai/zeus_client_golang/config"
-	"github.com/koten-ai/zeus_client_golang/domain"
-	"github.com/koten-ai/zeus_client_golang/domain/journal"
-	"github.com/koten-ai/zeus_client_golang/ports"
+	"github.com/Koten-ai-org/zeus_client_golang/adapters/jobsfake"
+	"github.com/Koten-ai-org/zeus_client_golang/adapters/jobshttp"
+	"github.com/Koten-ai-org/zeus_client_golang/api"
+	"github.com/Koten-ai-org/zeus_client_golang/application"
+	"github.com/Koten-ai-org/zeus_client_golang/config"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/domain/journal"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
 )
 
 func isolatedOpts() Options {

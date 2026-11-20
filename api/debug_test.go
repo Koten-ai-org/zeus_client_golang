@@ -5,7 +5,7 @@ package api
 import (
 	"testing"
 
-	"github.com/koten-ai/zeus_client_golang/domain/journal"
+	"github.com/Koten-ai-org/zeus_client_golang/domain/journal"
 )
 
 func TestDebugAPIExportJournal(t *testing.T) {

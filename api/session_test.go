@@ -12,12 +12,12 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/koten-ai/zeus_client_golang/adapters/secretsenv"
-	"github.com/koten-ai/zeus_client_golang/adapters/zeushttp"
-	"github.com/koten-ai/zeus_client_golang/application"
-	"github.com/koten-ai/zeus_client_golang/application/projectors"
-	"github.com/koten-ai/zeus_client_golang/config"
-	"github.com/koten-ai/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/adapters/secretsenv"
+	"github.com/Koten-ai-org/zeus_client_golang/adapters/zeushttp"
+	"github.com/Koten-ai-org/zeus_client_golang/application"
+	"github.com/Koten-ai-org/zeus_client_golang/application/projectors"
+	"github.com/Koten-ai-org/zeus_client_golang/config"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
 )
 
 func TestG4MockCreateServerShapedID(t *testing.T) {

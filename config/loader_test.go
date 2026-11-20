@@ -12,7 +12,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/koten-ai/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
 )
 
 func writeJSON(t *testing.T, v any) string {

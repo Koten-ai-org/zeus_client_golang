@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/koten-ai/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
 )
 
 // FromMapping builds RuntimeConfig from a plain mapping (file JSON shape) and applies profile.

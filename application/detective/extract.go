@@ -9,8 +9,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/koten-ai/zeus_client_golang/application/projectors"
-	"github.com/koten-ai/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/application/projectors"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
 )
 
 // InjectSectionMaxBytes caps rewind inject text (~96 KiB; Hub inject_inspect).

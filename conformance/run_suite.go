@@ -13,7 +13,7 @@ import (
 
 const (
 	languageGo     = "go"
-	packageModule  = "github.com/koten-ai/zeus_client_golang"
+	packageModule  = "github.com/Koten-ai-org/zeus_client_golang"
 	defaultFloor   = "client-floor-5"
 	defaultClaim   = "candidate"
 	statusRequired = "required"

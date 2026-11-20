@@ -2,7 +2,7 @@
 
 Residuals that block a higher claim than **candidate**. Offline CHECKLIST E
 (conformance `conformance-0.2-dev` 16/16 locally) does **not** lift this.
-Version stays **0.1.0**. Claim stays **candidate**. `multi_agent` stays **demo**
+Version stays **0.1.1**. Claim stays **candidate**. `multi_agent` stays **demo**
 (not `supported`).
 
 ## Clones / fixtures
@@ -16,7 +16,7 @@ Version stays **0.1.0**. Claim stays **candidate**. `multi_agent` stays **demo**
 
 - Full ZF-WISH-003 Detective **agent rewind** (drive `RunAgentTurn` from tape
   LLM + Zeus hops) is not claimed. Kit-β: companions + slim `assert_only`.
-- chat_request **COMPAT** triple for Go 0.1.0 × Zeus × BASE is not authored here.
+- chat_request **COMPAT** triple for Go 0.1.1 × Zeus × BASE is not authored here.
   Do not invent production `contract_hash` / Hub stamps.
 
 ## Live smoke

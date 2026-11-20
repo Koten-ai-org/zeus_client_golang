@@ -15,8 +15,8 @@ import (
 	"github.com/koten-ai/koten_multi_agent_golang/backend/memory"
 	"github.com/koten-ai/koten_multi_agent_golang/multiagent"
 	"github.com/koten-ai/koten_multi_agent_golang/workunit"
-	"github.com/koten-ai/zeus_client_golang/domain"
-	"github.com/koten-ai/zeus_client_golang/ports"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
 )
 
 const jobsMAComponent = "adapters.jobsma"

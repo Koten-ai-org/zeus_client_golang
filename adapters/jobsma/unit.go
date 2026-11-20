@@ -9,7 +9,7 @@ import (
 	"fmt"
 
 	"github.com/koten-ai/koten_multi_agent_golang/workunit"
-	"github.com/koten-ai/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
 )
 
 // UnitRunner is AgentTurn / ZeusDirect (api.UnitsAPI / api.UnitHost).

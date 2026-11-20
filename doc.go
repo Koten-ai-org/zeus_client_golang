@@ -7,7 +7,7 @@
 // Zeus / Agent / Catalog / Session / Jobs / Units / Debug are real facades.
 // Import:
 //
-//	import zeusclient "github.com/koten-ai/zeus_client_golang"
+//	import zeusclient "github.com/Koten-ai-org/zeus_client_golang"
 //
 // Claim level is candidate until a human MATRIX row. Never treat this
 // package as supported from CI green alone.

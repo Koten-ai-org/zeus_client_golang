@@ -5,7 +5,7 @@ package llmopenai
 import (
 	"strings"
 
-	"github.com/koten-ai/zeus_client_golang/ports"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
 )
 
 // CacheHints is provider-aware prompt-caching (Python cache_hints).

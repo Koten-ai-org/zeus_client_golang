@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/koten-ai/zeus_client_golang/domain/journal"
+	"github.com/Koten-ai-org/zeus_client_golang/domain/journal"
 )
 
 func TestExportJournalRedactedFiltersTurn(t *testing.T) {

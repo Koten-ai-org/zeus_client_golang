@@ -19,14 +19,14 @@ import (
 	"strings"
 	"time"
 
-	zeusclient "github.com/koten-ai/zeus_client_golang"
-	"github.com/koten-ai/zeus_client_golang/adapters/jobsma"
-	"github.com/koten-ai/zeus_client_golang/adapters/llmopenai"
-	"github.com/koten-ai/zeus_client_golang/adapters/zeushttp"
-	"github.com/koten-ai/zeus_client_golang/api"
-	"github.com/koten-ai/zeus_client_golang/config"
-	"github.com/koten-ai/zeus_client_golang/domain"
-	"github.com/koten-ai/zeus_client_golang/ports"
+	zeusclient "github.com/Koten-ai-org/zeus_client_golang"
+	"github.com/Koten-ai-org/zeus_client_golang/adapters/jobsma"
+	"github.com/Koten-ai-org/zeus_client_golang/adapters/llmopenai"
+	"github.com/Koten-ai-org/zeus_client_golang/adapters/zeushttp"
+	"github.com/Koten-ai-org/zeus_client_golang/api"
+	"github.com/Koten-ai-org/zeus_client_golang/config"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
 )
 
 const (

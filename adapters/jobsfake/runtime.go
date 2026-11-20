@@ -8,9 +8,9 @@ import (
 	"encoding/hex"
 	"sync"
 
-	"github.com/koten-ai/zeus_client_golang/domain"
-	"github.com/koten-ai/zeus_client_golang/domain/journal"
-	"github.com/koten-ai/zeus_client_golang/ports"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/domain/journal"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
 )
 
 // UnitRunner is AgentTurn / ZeusDirect (api.UnitsAPI / api.UnitHost).

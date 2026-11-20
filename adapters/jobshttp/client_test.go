@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/koten-ai/zeus_client_golang/domain"
-	"github.com/koten-ai/zeus_client_golang/ports"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
 )
 
 func requireCode(t *testing.T, err error, code domain.Code) {

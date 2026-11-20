@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/koten-ai/zeus_client_golang/conformance"
+	"github.com/Koten-ai-org/zeus_client_golang/conformance"
 )
 
 func main() {

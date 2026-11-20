@@ -13,11 +13,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/koten-ai/zeus_client_golang/adapters/secretsenv"
-	"github.com/koten-ai/zeus_client_golang/adapters/zeushttp"
-	"github.com/koten-ai/zeus_client_golang/config"
-	"github.com/koten-ai/zeus_client_golang/domain"
-	"github.com/koten-ai/zeus_client_golang/domain/journal"
+	"github.com/Koten-ai-org/zeus_client_golang/adapters/secretsenv"
+	"github.com/Koten-ai-org/zeus_client_golang/adapters/zeushttp"
+	"github.com/Koten-ai-org/zeus_client_golang/config"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/domain/journal"
 )
 
 const (

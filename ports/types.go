@@ -2,7 +2,7 @@
 
 package ports
 
-import "github.com/koten-ai/zeus_client_golang/config"
+import "github.com/Koten-ai-org/zeus_client_golang/config"
 
 // AuthContext is minted auth for a Zeus hop (Python AuthContext).
 // Mode empty means "none". Headers are names/values only — no secrets.

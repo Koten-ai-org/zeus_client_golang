@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/koten-ai/zeus_client_golang/security"
+	"github.com/Koten-ai-org/zeus_client_golang/security"
 )
 
 func TestInfoEventNameAndAttrs(t *testing.T) {

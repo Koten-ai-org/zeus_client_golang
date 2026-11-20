@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/koten-ai/zeus_client_golang/domain"
-	"github.com/koten-ai/zeus_client_golang/ports"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
 )
 
 // Handler serves SSE WatchJob for Pattern B consumers:

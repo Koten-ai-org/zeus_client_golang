@@ -9,10 +9,10 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/koten-ai/zeus_client_golang/adapters/jobsfake"
-	"github.com/koten-ai/zeus_client_golang/domain"
-	"github.com/koten-ai/zeus_client_golang/domain/journal"
-	"github.com/koten-ai/zeus_client_golang/ports"
+	"github.com/Koten-ai-org/zeus_client_golang/adapters/jobsfake"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/domain/journal"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
 )
 
 type stubJobsPort struct {

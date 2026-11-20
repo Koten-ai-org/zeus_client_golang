@@ -9,7 +9,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/koten-ai/zeus_client_golang/security"
+	"github.com/Koten-ai-org/zeus_client_golang/security"
 )
 
 func evt(eventID string, ts int64, typ string, extra map[string]any) JournalEvent {

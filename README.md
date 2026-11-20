@@ -9,7 +9,7 @@ This is **Option A**: a native SDK (no FFI). Same **Client law** as
 the behavioral oracle when implementation details differ; family law still wins
 on stamps, COMPAT, and claim honesty.
 
-> **0.1.0 candidate** — hexagonal packages through P-Suite (G0–G8 offline).
+> **0.1.1 candidate** — hexagonal packages through P-Suite (G0–G8 offline).
 > Claim remains **candidate** until a human
 > [MATRIX](https://github.com/koten-ai/zeus_client_design/blob/main/MATRIX.md)
 > row. Everyday Q&A stays Mode 1; jobs are never auto-promoted from chat.
@@ -22,11 +22,11 @@ import (
     "fmt"
     "log"
 
-    zeusclient "github.com/koten-ai/zeus_client_golang"
+    zeusclient "github.com/Koten-ai-org/zeus_client_golang"
 )
 
 func main() {
-    fmt.Println(zeusclient.Version) // 0.1.0
+    fmt.Println(zeusclient.Version) // 0.1.1
     c, err := zeusclient.New(zeusclient.Options{})
     if err != nil {
         log.Fatal(err)
@@ -39,8 +39,8 @@ func main() {
 
 | Field | Value |
 | --- | --- |
-| **module** | `github.com/koten-ai/zeus_client_golang` |
-| **version** | `0.1.0` (`zeusclient.Version`) |
+| **module** | `github.com/Koten-ai-org/zeus_client_golang` |
+| **version** | `0.1.1` (`zeusclient.Version`) |
 | **min Go** | **1.25** (Pattern A links `koten_multi_agent_golang` v0.6.1) |
 | **license** | **BUSL-1.1** (Additional Use Grant: None; Change License Apache-2.0 on 2030-09-10) |
 | **claim_level** | **candidate** (not `supported`) |
@@ -131,7 +131,7 @@ is the public `New` / `Close` shape; folders follow
 [IMPLEMENTATION_GUIDE](https://github.com/koten-ai/zeus_client_python/blob/main/docs/V2/IMPLEMENTATION_GUIDE.md) Phase 0.
 
 ```text
-github.com/koten-ai/zeus_client_golang
+github.com/Koten-ai-org/zeus_client_golang
   client.go runtime.go version.go
   config/          # RuntimeConfig, profiles, loader (ZCG-12)
   domain/          # ids + ErrorCode (ZCG-10); Result envelope (ZCG-8); journal (ZCG-9); contract+stamps (ZCG-18); catalog path/lineage/mini_schema/floor (ZCG-15); rules freeze + inject proof + tool trail (ZCG-20); SessionHandle (ZCG-19); LLM classify (ZCG-14)

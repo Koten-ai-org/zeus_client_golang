@@ -1,4 +1,4 @@
-module github.com/koten-ai/zeus_client_golang
+module github.com/Koten-ai-org/zeus_client_golang
 
 go 1.25.0
 

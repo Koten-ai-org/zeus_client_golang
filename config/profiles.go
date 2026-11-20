@@ -5,7 +5,7 @@ package config
 import (
 	"strings"
 
-	"github.com/koten-ai/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
 )
 
 // Profiles is the named set (Python PROFILES). API_CONFIG lists development / production / ci; hub is Python V2.

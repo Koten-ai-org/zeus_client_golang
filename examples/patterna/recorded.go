@@ -8,8 +8,8 @@ import (
 	"context"
 	"sync"
 
-	"github.com/koten-ai/zeus_client_golang/config"
-	"github.com/koten-ai/zeus_client_golang/ports"
+	"github.com/Koten-ai-org/zeus_client_golang/config"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
 )
 
 // recordedZeus is an in-process ZeusPort for the checked-in Jobs().Run

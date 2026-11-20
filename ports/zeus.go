@@ -5,7 +5,7 @@ package ports
 import (
 	"context"
 
-	"github.com/koten-ai/zeus_client_golang/config"
+	"github.com/Koten-ai-org/zeus_client_golang/config"
 )
 
 // ZeusPort is the Zeus data-plane adapter (Python ZeusPort).

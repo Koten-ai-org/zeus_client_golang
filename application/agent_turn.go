@@ -11,13 +11,13 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/koten-ai/zeus_client_golang/adapters/zeushttp"
-	"github.com/koten-ai/zeus_client_golang/application/detective"
-	"github.com/koten-ai/zeus_client_golang/application/projectors"
-	"github.com/koten-ai/zeus_client_golang/config"
-	"github.com/koten-ai/zeus_client_golang/domain"
-	"github.com/koten-ai/zeus_client_golang/domain/journal"
-	"github.com/koten-ai/zeus_client_golang/ports"
+	"github.com/Koten-ai-org/zeus_client_golang/adapters/zeushttp"
+	"github.com/Koten-ai-org/zeus_client_golang/application/detective"
+	"github.com/Koten-ai-org/zeus_client_golang/application/projectors"
+	"github.com/Koten-ai-org/zeus_client_golang/config"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/domain/journal"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
 )
 
 const agentTurnComponent = "application.agent_turn"

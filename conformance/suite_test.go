@@ -52,10 +52,10 @@ func TestConformanceSuiteCandidateOffline(t *testing.T) {
 	if report.ClaimLevel != "candidate" {
 		t.Fatalf("claim_level %q", report.ClaimLevel)
 	}
-	if report.Package != "github.com/koten-ai/zeus_client_golang" {
+	if report.Package != "github.com/Koten-ai-org/zeus_client_golang" {
 		t.Fatalf("package %q", report.Package)
 	}
-	if report.PackageVersion != "0.1.0" {
+	if report.PackageVersion != "0.1.1" {
 		t.Fatalf("package_version %q", report.PackageVersion)
 	}
 	raw, err := json.Marshal(report)

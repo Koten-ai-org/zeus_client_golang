@@ -9,12 +9,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/koten-ai/zeus_client_golang/adapters/jobsma"
-	"github.com/koten-ai/zeus_client_golang/api"
-	"github.com/koten-ai/zeus_client_golang/config"
-	"github.com/koten-ai/zeus_client_golang/domain"
-	"github.com/koten-ai/zeus_client_golang/domain/journal"
-	"github.com/koten-ai/zeus_client_golang/ports"
+	"github.com/Koten-ai-org/zeus_client_golang/adapters/jobsma"
+	"github.com/Koten-ai-org/zeus_client_golang/api"
+	"github.com/Koten-ai-org/zeus_client_golang/config"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/domain/journal"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
 )
 
 func waitClientJob(t *testing.T, c *Client, jobID string) domain.JobSnapshot {

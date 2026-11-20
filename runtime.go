@@ -9,15 +9,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/koten-ai/zeus_client_golang/adapters/jobshttp"
-	"github.com/koten-ai/zeus_client_golang/adapters/secretsenv"
-	"github.com/koten-ai/zeus_client_golang/api"
-	"github.com/koten-ai/zeus_client_golang/config"
-	"github.com/koten-ai/zeus_client_golang/domain/journal"
-	"github.com/koten-ai/zeus_client_golang/internal/httpx"
-	"github.com/koten-ai/zeus_client_golang/observability"
-	"github.com/koten-ai/zeus_client_golang/ports"
-	"github.com/koten-ai/zeus_client_golang/security"
+	"github.com/Koten-ai-org/zeus_client_golang/adapters/jobshttp"
+	"github.com/Koten-ai-org/zeus_client_golang/adapters/secretsenv"
+	"github.com/Koten-ai-org/zeus_client_golang/api"
+	"github.com/Koten-ai-org/zeus_client_golang/config"
+	"github.com/Koten-ai-org/zeus_client_golang/domain/journal"
+	"github.com/Koten-ai-org/zeus_client_golang/internal/httpx"
+	"github.com/Koten-ai-org/zeus_client_golang/observability"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
+	"github.com/Koten-ai-org/zeus_client_golang/security"
 )
 
 // Services is the internal dependency bundle (Python runtime.Services).

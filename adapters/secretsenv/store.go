@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/koten-ai/zeus_client_golang/ports"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
 )
 
 // Store reads secrets from a map, or os.Getenv when Environ is nil.

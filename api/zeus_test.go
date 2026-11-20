@@ -14,13 +14,13 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/koten-ai/zeus_client_golang/adapters/secretsenv"
-	"github.com/koten-ai/zeus_client_golang/adapters/zeushttp"
-	"github.com/koten-ai/zeus_client_golang/application"
-	"github.com/koten-ai/zeus_client_golang/config"
-	"github.com/koten-ai/zeus_client_golang/domain"
-	"github.com/koten-ai/zeus_client_golang/observability"
-	"github.com/koten-ai/zeus_client_golang/ports"
+	"github.com/Koten-ai-org/zeus_client_golang/adapters/secretsenv"
+	"github.com/Koten-ai-org/zeus_client_golang/adapters/zeushttp"
+	"github.com/Koten-ai-org/zeus_client_golang/application"
+	"github.com/Koten-ai-org/zeus_client_golang/config"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/observability"
+	"github.com/Koten-ai-org/zeus_client_golang/ports"
 )
 
 type recZeus struct {

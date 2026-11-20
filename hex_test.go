@@ -12,25 +12,25 @@ import (
 	"sync"
 	"testing"
 
-	_ "github.com/koten-ai/zeus_client_golang/adapters"
-	_ "github.com/koten-ai/zeus_client_golang/adapters/catalogfs"
-	_ "github.com/koten-ai/zeus_client_golang/adapters/jobsfake"
-	_ "github.com/koten-ai/zeus_client_golang/adapters/jobshttp"
-	_ "github.com/koten-ai/zeus_client_golang/adapters/llmopenai"
-	_ "github.com/koten-ai/zeus_client_golang/adapters/secretsenv"
-	_ "github.com/koten-ai/zeus_client_golang/adapters/zeushttp"
-	_ "github.com/koten-ai/zeus_client_golang/api"
-	_ "github.com/koten-ai/zeus_client_golang/application"
-	_ "github.com/koten-ai/zeus_client_golang/application/detective"
-	_ "github.com/koten-ai/zeus_client_golang/application/projectors"
-	_ "github.com/koten-ai/zeus_client_golang/config"
-	_ "github.com/koten-ai/zeus_client_golang/conformance"
-	_ "github.com/koten-ai/zeus_client_golang/domain"
-	_ "github.com/koten-ai/zeus_client_golang/domain/journal"
-	_ "github.com/koten-ai/zeus_client_golang/internal/httpx"
-	_ "github.com/koten-ai/zeus_client_golang/observability"
-	_ "github.com/koten-ai/zeus_client_golang/ports"
-	_ "github.com/koten-ai/zeus_client_golang/security"
+	_ "github.com/Koten-ai-org/zeus_client_golang/adapters"
+	_ "github.com/Koten-ai-org/zeus_client_golang/adapters/catalogfs"
+	_ "github.com/Koten-ai-org/zeus_client_golang/adapters/jobsfake"
+	_ "github.com/Koten-ai-org/zeus_client_golang/adapters/jobshttp"
+	_ "github.com/Koten-ai-org/zeus_client_golang/adapters/llmopenai"
+	_ "github.com/Koten-ai-org/zeus_client_golang/adapters/secretsenv"
+	_ "github.com/Koten-ai-org/zeus_client_golang/adapters/zeushttp"
+	_ "github.com/Koten-ai-org/zeus_client_golang/api"
+	_ "github.com/Koten-ai-org/zeus_client_golang/application"
+	_ "github.com/Koten-ai-org/zeus_client_golang/application/detective"
+	_ "github.com/Koten-ai-org/zeus_client_golang/application/projectors"
+	_ "github.com/Koten-ai-org/zeus_client_golang/config"
+	_ "github.com/Koten-ai-org/zeus_client_golang/conformance"
+	_ "github.com/Koten-ai-org/zeus_client_golang/domain"
+	_ "github.com/Koten-ai-org/zeus_client_golang/domain/journal"
+	_ "github.com/Koten-ai-org/zeus_client_golang/internal/httpx"
+	_ "github.com/Koten-ai-org/zeus_client_golang/observability"
+	_ "github.com/Koten-ai-org/zeus_client_golang/ports"
+	_ "github.com/Koten-ai-org/zeus_client_golang/security"
 )
 
 func TestVersionExported(t *testing.T) {
@@ -127,7 +127,7 @@ func walkNoNetHTTP(t *testing.T, root string) {
 			if impPath == "net/http" || strings.HasPrefix(impPath, "net/http/") {
 				t.Errorf("%s imports %s (must stay free of net/http)", path, impPath)
 			}
-			const mod = "github.com/koten-ai/zeus_client_golang"
+			const mod = "github.com/Koten-ai-org/zeus_client_golang"
 			if impPath == mod+"/adapters" || strings.HasPrefix(impPath, mod+"/adapters/") ||
 				impPath == mod+"/internal/httpx" || strings.HasPrefix(impPath, mod+"/internal/httpx/") {
 				t.Errorf("%s imports %s (must not import adapters/httpx)", path, impPath)

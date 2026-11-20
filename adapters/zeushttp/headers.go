@@ -5,7 +5,7 @@ package zeushttp
 import (
 	"strings"
 
-	"github.com/koten-ai/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
 )
 
 // ProductUser is the product stamp (never Hub admin).

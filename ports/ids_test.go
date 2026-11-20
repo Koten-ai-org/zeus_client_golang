@@ -6,7 +6,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/koten-ai/zeus_client_golang/domain"
+	"github.com/Koten-ai-org/zeus_client_golang/domain"
 )
 
 func TestUUIDFactoryTurnIDIsV4(t *testing.T) {

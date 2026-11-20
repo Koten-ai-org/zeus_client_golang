@@ -44,7 +44,7 @@ func TestPackageVersionFromVersionGo(t *testing.T) {
 		t.Fatal("repo root should be absolute")
 	}
 	_ = raw
-	if v != "0.1.0" {
-		t.Fatalf("version %q want 0.1.0 (package_version from version.go)", v)
+	if v != "0.1.1" {
+		t.Fatalf("version %q want 0.1.1 (package_version from version.go)", v)
 	}
 }

@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.1.1 — 2026-11-19
+
+### Changed
+
+- Module path is `github.com/Koten-ai-org/zeus_client_golang`. Install with `go get github.com/Koten-ai-org/zeus_client_golang@v0.1.1`. Tag `v0.1.0` stays module `github.com/koten-ai/zeus_client_golang`. `zeusclient.Version` is `0.1.1`. Claim stays **candidate**.
+
 ## Unreleased
 
 ### Changed
